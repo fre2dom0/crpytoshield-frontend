@@ -3,32 +3,51 @@
 import { useEffect, useState } from "react";
 import CircularProgressBar from "../progress-bars/CircularProgressBar";
 import { LinearProgress } from "@mui/material";
+import { zeroAddress } from "@/app/utils/handleAddress";
 
-const TokenScanner = () => {
+type Props = {
+    address?: string
+    data?: object
+    firstAnimation?: boolean;
+    isSearching: boolean;
+} 
+
+const TokenScanner = ({firstAnimation = false, data = {}, isSearching, address = zeroAddress}: Props) => {
+
 
     const [progress, setProgress] = useState<number>(0);
-    const [inProgress, setInProgress] = useState<boolean>(true);
+    const [inProgress, setInProgress] = useState<boolean>(firstAnimation);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress((prev) => {
-                if (prev >= 76) {
-                    clearInterval(interval);
-                    setInProgress(false);
-                    return 76;
-                }
-                return prev + 1;
-            });
-        }, 30); // 10ms * 100 = 1000ms = 1s
+        setInProgress(isSearching);
+    }, [isSearching])
 
-        return () => clearInterval(interval); // cleanup
-    }, []);
+    // -- First animation --
+    // Deactivate first animation
+    const isFirstAnimation: boolean = firstAnimation;
+    useEffect(() => {
+        if (isFirstAnimation) {
+            const interval = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev >= 76) {
+                        clearInterval(interval);
+                        setInProgress(false);
+                        return 76;
+                    }
+                    return prev + 1;
+                });
+            }, 30); // 10ms * 100 = 1000ms = 1s
+    
+            return () => clearInterval(interval); 
+        }
+    }, [isFirstAnimation]);
+    // ------------------------------
 
     return (
-        <div className="flex flex-col gap-4 border-2 xl:border-4 border-accent-primary/20 rounded-2xl py-6 px-3 md:px-8 md:w-[80%] xl:w-[60%] mx-auto ">
+        <div className="flex flex-col gap-4 border-2 xl:border-4 border-accent-primary/20 rounded-2xl py-6 px-3 md:px-8 w-full sm:w-[90%] md:w-[80%] xl:w-[60%] ">
             
             <div className="flex justify-between font-semibold sm:py-5">
-                <span className="text-accent-primary/50 sm:text-xl 2xl:text-2xl">0x...0000</span>
+                <span className="text-accent-primary/50 sm:text-xl 2xl:text-2xl">{address ? address : ''}</span>
                 <span className="sm:text-xl 2xl:text-2xl">{inProgress ? 'Scanning...' : 'Success'}</span>
             </div>
 
