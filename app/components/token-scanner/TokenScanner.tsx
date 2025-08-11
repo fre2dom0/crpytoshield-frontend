@@ -9,18 +9,19 @@ type Props = {
     address?: string
     data?: object
     firstAnimation?: boolean;
-    isSearching: boolean;
+    isSearching?: boolean;
 } 
 
-const TokenScanner = ({firstAnimation = false, data = {}, isSearching, address = zeroAddress}: Props) => {
+const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, address = zeroAddress}: Props) => {
 
 
     const [progress, setProgress] = useState<number>(0);
     const [inProgress, setInProgress] = useState<boolean>(firstAnimation);
     console.log(data);
     useEffect(() => {
+        console.log(inProgress)
         setInProgress(isSearching);
-    }, [isSearching])
+    }, [isSearching, inProgress])
 
     // -- First animation --
     // Deactivate first animation

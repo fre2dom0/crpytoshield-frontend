@@ -16,9 +16,10 @@ const SearchableScanner = () => {
     }
 
     useEffect(() => {
-        setIsSearching(true);
         const timeoutId = setTimeout(async () => {
             if (isAddress(address) && address !== zeroAddress) {
+                setIsSearching(true);
+
                 try {
                     const res = await fetch(`/api/scan?address=${address}`);
                     const data = await res.json();
