@@ -17,7 +17,7 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching, address =
 
     const [progress, setProgress] = useState<number>(0);
     const [inProgress, setInProgress] = useState<boolean>(firstAnimation);
-
+    console.log(data);
     useEffect(() => {
         setInProgress(isSearching);
     }, [isSearching])
