@@ -10,7 +10,7 @@ import { ScanResponse } from "@/app/types/ScanResponse";
 
 type Props = {
     address?: string
-    data: ScanResponse | null
+    data?: ScanResponse | null
     firstAnimation?: boolean;
     isSearching?: boolean;
 } 
