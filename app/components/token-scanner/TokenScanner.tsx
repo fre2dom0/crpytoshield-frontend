@@ -4,22 +4,30 @@ import { useEffect, useState } from "react";
 import CircularProgressBar from "../progress-bars/CircularProgressBar";
 import { LinearProgress } from "@mui/material";
 import { zeroAddress } from "@/app/utils/handleAddress";
+import { ScanResponse } from "@/app/types/ScanResponse";
+
+
 
 type Props = {
     address?: string
-    data?: object
+    data: ScanResponse | null
     firstAnimation?: boolean;
     isSearching?: boolean;
 } 
 
-const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, address = zeroAddress}: Props) => {
+const TokenScanner = ({firstAnimation = false, data = null, isSearching = false, address = zeroAddress}: Props) => {
 
 
     const [progress, setProgress] = useState<number>(0);
     const [inProgress, setInProgress] = useState<boolean>(firstAnimation);
-    console.log(data);
+    const verdict = data?.data?.verdict;
+    const score = data?.data?.score;
+    const honeypot = data?.data?.honeypot;
+    const liquidity = data?.data?.liquidity;
+    const rugpull = data?.data?.rugpull;
+
+
     useEffect(() => {
-        console.log(inProgress)
         setInProgress(isSearching);
     }, [isSearching, inProgress])
 
@@ -47,11 +55,13 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, a
     return (
         <div className="flex flex-col gap-4 border-2 xl:border-4 border-accent-primary/20 rounded-2xl py-6 px-3 md:px-8 w-full sm:w-[90%] md:w-[80%] xl:w-[60%] ">
             
+            {/* General Info */}
             <div className="flex justify-between font-semibold sm:py-5">
-                <span className="text-accent-primary/50 sm:text-xl 2xl:text-2xl">{address ? address : ''}</span>
-                <span className="sm:text-xl 2xl:text-2xl">{inProgress ? 'Scanning...' : 'Success'}</span>
+                <span className="text-accent-primary/50 sm:text-xl 2xl:text-2xl">{address ? `${address.substring(0, 2)}...${address.substring(36, 42)}` : ''}</span>
+                <span className="sm:text-xl 2xl:text-2xl">{inProgress ? 'Scanning...' : verdict}</span>
             </div>
 
+            {/* Score */}
             <div className="flex items-center bg-surface-primary/20 border-2 border-accent-primary/5 rounded-lg py-4 sm:py-8 px-4">
                 <div className="flex-4/5 flex flex-col gap-2 py-2 pr-3 text-accent-primary/10">
                     <span className="text-start text-text-primary sm:text-xl 2xl:text-2xl">CryptoShield Score</span>
@@ -59,10 +69,11 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, a
                     <LinearProgress variant={`${inProgress ? 'indeterminate' :  'determinate'}`} value={100} color="inherit" />
                 </div>
                 <div className="relative flex-1/5 flex justify-center items-center text-accent-primary ">
-                    <CircularProgressBar progress={progress} />
+                    <CircularProgressBar progress={score ? score * 10 : progress} />
                 </div>
             </div>
 
+            {/* Details */}
             <div className="grid grid-cols-3 gap-2 min-h-[100px] sm:min-h-[150px] 2xl:min-h-[180px]">
                 <div className="flex flex-col justify-center items-center gap-3 py-2 px-2 bg-surface-primary/20 border-2 border-accent-primary/5 rounded-lg">
                     <span className="text-sm sm:text-xl 2xl:text-2xl text-center">Honeypot Check</span>
@@ -75,9 +86,9 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, a
                                 </svg>
                             </div>
                             : 
-                            <div className="bg-accent-primary w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full"> </div>
+                            <div className={`${honeypot?.passed ? 'bg-accent-primary' : 'bg-red-400'} w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full`}> </div>
                         }
-                        <span className="text-text-primary text-xs sm:text-lg 2xl:text-xl">{inProgress ? 'Scanning' : 'Passed'}</span>
+                        <span className={`${honeypot?.passed ? 'text-accent-primary' : 'text-red-400'} text-xs sm:text-lg 2xl:text-xl`}>{inProgress ? 'Scanning' : (honeypot?.passed ? 'Passed' : 'Dangerous') }</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-3 py-2 px-2 bg-surface-primary/20 border-2 border-accent-primary/5 rounded-lg">
@@ -91,9 +102,9 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, a
                                 </svg>
                             </div>
                             : 
-                            <div className="bg-yellow-300 w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full"></div>
+                            <div className={`${rugpull?.passed ? 'bg-accent-primary' : 'bg-red-400'} w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full`}></div>
                         }
-                        <span className="text-yellow-300 text-xs sm:text-lg 2xl:text-xl">{inProgress ? 'Scanning' : 'Medium'}</span>
+                        <span className={`${rugpull?.passed ? 'text-accent-primary' : 'text-red-400'} text-xs sm:text-lg 2xl:text-xl`}>{inProgress ? 'Scanning' : (rugpull?.passed ? 'Passed' : 'Dangerous')}</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-3 py-2 px-2 bg-surface-primary/20 border-2 border-accent-primary/5 rounded-lg">
@@ -107,9 +118,9 @@ const TokenScanner = ({firstAnimation = false, data = {}, isSearching = false, a
                                 </svg>
                             </div>
                             : 
-                            <div className="bg-red-400 w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full "> </div>
+                            <div className={`${liquidity?.passed ? 'bg-accent-primary' : 'bg-red-400'} w-[12px] sm:w-[16px] h-[12px] sm:h-[16px] rounded-full`}> </div>
                         }
-                        <span className="text-red-400 text-xs sm:text-lg 2xl:text-xl">{inProgress ? 'Scanning' : 'Low'}</span>
+                        <span className={`${liquidity?.passed ? 'text-accent-primary' : 'text-red-400'} text-xs sm:text-lg 2xl:text-xl`}>{inProgress ? 'Scanning' : (liquidity?.passed ? 'Passed' : 'Dangerous')}</span>
                     </div>
                 </div>
             </div>

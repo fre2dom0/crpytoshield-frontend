@@ -1,6 +1,7 @@
 'use client'
 
 import { CircularProgress } from "@mui/material";
+import { useEffect } from "react";
 
 // function getTextSizeByProgress(
 //     progress: number,
@@ -31,6 +32,11 @@ type Props = {
 }
 
 const CircularProgressBar = ({progress}: Props) => {
+    
+
+    useEffect(() => {
+        
+    })
 
     return (
         <div className="relative w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] xl:w-[140px] xl:h-[140px]">
